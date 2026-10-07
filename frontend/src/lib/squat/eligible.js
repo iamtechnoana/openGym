@@ -2,6 +2,8 @@
  * from the side. Catalogue ids are listed one by one — the names alone would let in split, jump,
  * single-leg and "squat row" variants. Custom exercises qualify by name, with the same kinds of
  * variants kept out. The catalogue changes in v1.4.0: re-check this list then. */
+import { modeOf, isPerSide } from '../history.js'
+
 export const CAMERA_SQUAT_IDS = new Set([
   '1004', // band squat
   '0029', '0039', '0042', // barbell front squats
@@ -21,4 +23,13 @@ export function isCameraSquat(id, name = '') {
   if (CAMERA_SQUAT_IDS.has(key)) return true
   if (/^\d{4}$/.test(key)) return false
   return SQUAT.test(name) && !NOT_TWO_LEGGED.test(name)
+}
+
+/** The menu's test for one workout entry: a camera squat that is also set up for plain reps. A
+ *  per-side row keeps its reps in sides.L/R and a timed row has none, so the count could not be
+ *  written there the way logCameraReps writes it. */
+export function canCountWithCamera(entry, name = '') {
+  if (!entry) return false
+  const cfg = { ...(entry.target || {}), id: entry.id }
+  return isCameraSquat(entry.id, name) && modeOf(cfg) === 'reps' && !isPerSide(cfg)
 }

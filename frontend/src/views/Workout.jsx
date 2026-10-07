@@ -40,7 +40,7 @@ import { isWarmupRow, isDropSet, isRestPauseSet, dropsOf, clustersOf, addDrop, a
 import { canMoveActiveWorkoutUnit, moveActiveWorkoutUnit } from '../lib/active-workout-order.js'
 import { nextOpenSet, workoutKeyAction } from '../lib/workout-keys.js'
 import { MUSCLE_NAME } from '../lib/muscles.js'
-import { isCameraSquat } from '../lib/squat/eligible.js'
+import { canCountWithCamera } from '../lib/squat/eligible.js'
 import { pickSetToLog } from '../lib/squat/log-reps.js'
 const RepCamera = lazy(() => import('../components/RepCamera.jsx'))
 
@@ -378,7 +378,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     sections: [
       { title: t('Today'), items: [
         onSwap && { icon: 'swap', label: t('Swap exercise'), onClick: onSwap, disabled: busy },
-        onCameraCount && isCameraSquat(entry.id, ex?.n) && { icon: 'camera', label: t('Count with camera'), onClick: onCameraCount },
+        onCameraCount && canCountWithCamera(entry, ex?.n) && { icon: 'camera', label: t('Count with camera'), onClick: onCameraCount },
         { icon: 'sunrise', label: t('Add warm-up set'), onClick: onAddWarmup },
         { icon: 'note', label: entry.note ? t('Edit note') : t('Add note'), sub: entry.note || undefined, onClick: () => exerciseNoteSheet(entryIdx) },
         onNoProg && { icon: 'chartLineSlash', label: t('Don’t count for progression'), sub: t('This exercise, this session only'), on: entry.noProg === true, onClick: () => onNoProg(entry.noProg !== true) },

@@ -1,5 +1,20 @@
 import { describe, it, expect } from 'vitest'
-import { isCameraSquat, CAMERA_SQUAT_IDS } from './eligible.js'
+import { isCameraSquat, canCountWithCamera, CAMERA_SQUAT_IDS } from './eligible.js'
+
+describe('canCountWithCamera', () => {
+  it('offers itself on a squat set up for reps on both legs', () => {
+    expect(canCountWithCamera({ id: '0043', target: { mode: 'reps' } })).toBe(true)
+    expect(canCountWithCamera({ id: '0043' })).toBe(true)
+  })
+  it('stays off a squat set up per side or as a timed hold, whose rows keep reps elsewhere', () => {
+    expect(canCountWithCamera({ id: '0043', target: { mode: 'reps', side: true } })).toBe(false)
+    expect(canCountWithCamera({ id: 'c_1', target: { mode: 'time' } }, 'Wall squat')).toBe(false)
+  })
+  it('still needs the exercise itself to qualify', () => {
+    expect(canCountWithCamera({ id: '0053', target: { mode: 'reps' } })).toBe(false)
+    expect(canCountWithCamera(null)).toBe(false)
+  })
+})
 
 describe('isCameraSquat', () => {
   it('offers itself on two-legged catalogue squats', () => {
