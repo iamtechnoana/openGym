@@ -21,3 +21,6 @@ node_modules
 junit.xml
 coverage/
 frontend/bundle-size.json
+
+# camera rep counter: MediaPipe runtime + model, fetched by frontend/scripts/fetch-pose-assets.mjs
+frontend/public/mediapipe/
