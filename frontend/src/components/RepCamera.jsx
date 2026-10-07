@@ -72,9 +72,15 @@ export default function RepCamera({ onSave, onCancel, deps = {} }) {
         v.srcObject = stream
         await v.play()
         try { pose = await makePose() } catch { if (!stopped) setError('model'); return }
-        if (stopped) return
+        // Closed or switched camera while the model loaded: cleanup already ran without it.
+        if (stopped) { pose.close(); return }
+        let lastVideoTime = -1
         const loop = () => {
           if (stopped) return
+          // The screen repaints faster than the camera delivers; read each camera frame once,
+          // so the model isn't run twice on the same picture and the fps below is the camera's.
+          if (v.currentTime === lastVideoTime) { id = raf(loop); return }
+          lastVideoTime = v.currentTime
           const ts = now()
           const lm = v.readyState >= 2 ? pose.detect(v, ts) : null
           const aspect = v.videoWidth && v.videoHeight ? v.videoWidth / v.videoHeight : 1
@@ -124,7 +130,7 @@ export default function RepCamera({ onSave, onCancel, deps = {} }) {
       {!done ? <>
         <div className="repcam-count" aria-live="polite">{count}</div>
         <div className="repcam-actions">
-          <Button className="repcam-finish" onClick={finish}>{t('Finish')}</Button>
+          <Button variant="primary" className="repcam-finish" onClick={finish}>{t('Finish')}</Button>
           <Button variant="tinted" icon="swap" onClick={() => setFacing(f => (f === 'user' ? 'environment' : 'user'))}>{t('Switch camera')}</Button>
           <Button variant="ghost" onClick={onCancel}>{t('Discard')}</Button>
         </div>
@@ -132,7 +138,7 @@ export default function RepCamera({ onSave, onCancel, deps = {} }) {
         <div className="repcam-summary">
           {summaryLines(summary).map((line, i) => <div key={i} className={i ? 'small' : 'repcam-sum-head'}>{line}</div>)}
           <div className="repcam-actions">
-            <Button className="repcam-finish" disabled={!count} onClick={() => onSave(count)}>{t('Save to set')}</Button>
+            <Button variant="primary" className="repcam-finish" disabled={!count} onClick={() => onSave(count)}>{t('Save to set')}</Button>
             <Button variant="ghost" onClick={onCancel}>{t('Discard')}</Button>
           </div>
         </div>

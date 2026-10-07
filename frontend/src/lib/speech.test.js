@@ -39,6 +39,18 @@ describe('createSpeaker — Android app', () => {
     await sp.say('Daha derin')
     expect(tts.speak).toHaveBeenCalledWith(expect.objectContaining({ text: 'Daha derin', lang: 'tr-TR', queueStrategy: 1 }))
   })
+  it('says a cue after the count it follows, even though the count interrupts', async () => {
+    const calls = []
+    const tts = {
+      speak: vi.fn(async ({ text }) => { calls.push('speak:' + text) }),
+      stop: vi.fn(async () => { calls.push('stop') }),
+    }
+    const sp = createSpeaker({ native: true, loadTts: async () => tts })
+    await sp.say('warm')
+    sp.say('3', { interrupt: true })
+    await sp.say('Deeper')
+    expect(calls).toEqual(['speak:warm', 'stop', 'speak:3', 'speak:Deeper'])
+  })
   it('falls back to beeps for good once the plugin fails', async () => {
     const fallback = vi.fn()
     const tts = { speak: vi.fn().mockRejectedValue(new Error('no tts')), stop: vi.fn() }

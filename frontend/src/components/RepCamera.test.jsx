@@ -80,6 +80,33 @@ describe('RepCamera', () => {
     await act(async () => { document.dispatchEvent(new Event('visibilitychange')) })
     expect(host.textContent).toMatch('5 reps')
   })
+  it('makes Finish and Save the big primary buttons', async () => {
+    await mount()
+    expect(button('Finish').className).toMatch(/\bprimary\b/)
+    await act(async () => { button('Finish').click() })
+    expect(button('Save to set').className).toMatch(/\bprimary\b/)
+  })
+  it('closes a pose model that finishes loading after the screen is gone', async () => {
+    let resolvePose
+    const pose = { detect: vi.fn(), close: vi.fn() }
+    await mount({ deps: deps({ makePose: () => new Promise(r => { resolvePose = r }) }) })
+    act(() => root.unmount())
+    await act(async () => { resolvePose(pose) })
+    expect(pose.close).toHaveBeenCalled()
+    root = createRoot(host)   // afterEach unmounts again
+  })
+  it('reads each camera frame once, however often the screen repaints', async () => {
+    const detect = vi.fn(() => [])
+    let videoTime = 0
+    Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', { configurable: true, get: () => videoTime, set: () => {} })
+    await mount({ deps: deps({ makePose: vi.fn().mockResolvedValue({ detect, close: vi.fn() }) }) })
+    await act(async () => { frameCb() })
+    await act(async () => { frameCb() })      // repaint, same camera frame
+    videoTime = 0.033
+    await act(async () => { frameCb() })
+    expect(detect).toHaveBeenCalledTimes(2)
+    delete HTMLMediaElement.prototype.currentTime
+  })
   it('explains a refused camera instead of crashing', async () => {
     await mount({ deps: deps({ open: vi.fn().mockRejectedValue({ code: 'denied' }) }) })
     expect(host.querySelector('[role="alert"]').textContent).toMatch(/Camera access was denied/)

@@ -23,15 +23,31 @@ export function createSpeaker({
   const voice = speechLang(lang)
   let tts = null
   let broken = false
+  // Lines reach the engine in the order they were said: each waits until the one before it has
+  // been handed over (not until it has been spoken, or a count could never cut a line short).
+  // Without this, a cue said right after an interrupting count overtook it while the count was
+  // still waiting on stop(), and "deeper" came out before "three".
+  let handedOver = Promise.resolve()
 
-  async function say(text, { interrupt = false } = {}) {
+  function say(text, options = {}) {
+    const previous = handedOver
+    let handed
+    handedOver = new Promise(resolve => { handed = resolve })
+    return (async () => {
+      try { await previous; await speak(text, options, handed) } finally { handed() }
+    })()
+  }
+
+  async function speak(text, { interrupt = false } = {}, handed) {
     if (broken) return fallback()
     try {
       if (native) {
         tts ||= await loadTts()
         if (interrupt) await tts.stop().catch(() => {})
         // queueStrategy 1 = Add: a cue waits for the count before it instead of cutting it off.
-        await tts.speak({ text, lang: voice, rate: 1.1, queueStrategy: 1 })
+        const spoken = tts.speak({ text, lang: voice, rate: 1.1, queueStrategy: 1 })
+        handed()
+        await spoken
         return
       }
       if (!synth || !Utterance) { broken = true; return fallback() }

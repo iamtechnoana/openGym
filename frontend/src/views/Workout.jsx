@@ -1219,11 +1219,13 @@ function ActiveWorkout() {
     setField(idx, i, 'r', reps)
     toggle(idx, i)
   }
+  // 'viewer': full screen with no .sheet around it — a sheet's transform would make it the
+  // containing block of the fixed-position camera and clip it to the sheet's own height.
   const openCameraCount = idx => useUI.getState().openSheet(close => (
     <Suspense fallback={null}>
       <RepCamera onCancel={close} onSave={reps => { close(); logCameraReps(idx, reps) }} />
     </Suspense>
-  ), { locked: true })
+  ), { kind: 'viewer', locked: true })
 
   // One prop object per entry so the card and list layouts share the exact same wiring. The
   // exercise-level actions (swap, move, remove) address the entry itself, so the "more" menu of
