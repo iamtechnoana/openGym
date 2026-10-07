@@ -1,0 +1,46 @@
+# Personal fork only: a debug APK of the `kisisel` branch on every push, downloadable from the run.
+# Signed with a fixed debug key (secret DEBUG_KEYSTORE_B64) so each build installs over the last
+# one without wiping the app's data.
+name: Android APK (kisisel)
+
+on:
+  push:
+    branches: [kisisel]
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+      - name: Fixed debug key
+        env:
+          KS: ${{ secrets.DEBUG_KEYSTORE_B64 }}
+        run: |
+          test -n "$KS" || { echo "secret DEBUG_KEYSTORE_B64 is missing" >&2; exit 1; }
+          mkdir -p ~/.android
+          echo "$KS" | base64 -d > ~/.android/debug.keystore
+      - name: Web bundle + cap sync
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build:mobile
+      - name: assembleDebug
+        working-directory: frontend/android
+        run: ./gradlew --no-daemon assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openGym-kisisel-debug-${{ github.run_number }}
+          path: frontend/android/app/build/outputs/apk/debug/*.apk
+          retention-days: 30
