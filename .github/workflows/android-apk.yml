@@ -8,6 +8,10 @@ on:
     branches: [kisisel]
   workflow_dispatch:
 
+# Reading the code is all this job needs; the artifact upload uses its own runtime token.
+permissions:
+  contents: read
+
 jobs:
   apk:
     runs-on: ubuntu-latest
