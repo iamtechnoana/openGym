@@ -1,0 +1,11 @@
+.repcam { position: fixed; inset: 0; z-index: 1000; background: #000; color: #fff; display: flex; flex-direction: column; }
+.repcam video, .repcam canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.repcam video.mirror, .repcam canvas.mirror { transform: scaleX(-1); }
+.repcam-top { position: relative; padding: calc(env(safe-area-inset-top) + 16px) 16px 0; display: grid; gap: 8px; }
+.repcam-hint, .repcam-warn { background: rgba(0, 0, 0, .6); border-radius: 12px; padding: 10px 14px; font-size: 17px; }
+.repcam-warn { color: var(--yellow); }
+.repcam-count { position: relative; margin: auto; font-size: 140px; font-weight: 800; line-height: 1; text-shadow: 0 2px 12px rgba(0, 0, 0, .7); }
+.repcam-actions { position: relative; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 16px 16px calc(env(safe-area-inset-bottom) + 24px); }
+.repcam-finish { min-width: 60%; font-size: 22px; padding: 18px; }
+.repcam-summary { position: relative; margin-top: auto; background: var(--bg-2, #1c1c1e); border-radius: 20px 20px 0 0; padding: 24px 16px 0; display: grid; gap: 6px; text-align: center; }
+.repcam-sum-head { font-size: 34px; font-weight: 800; }

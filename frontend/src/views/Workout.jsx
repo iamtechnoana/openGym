@@ -41,7 +41,8 @@ import { canMoveActiveWorkoutUnit, moveActiveWorkoutUnit } from '../lib/active-w
 import { nextOpenSet, workoutKeyAction } from '../lib/workout-keys.js'
 import { MUSCLE_NAME } from '../lib/muscles.js'
 import { isCameraSquat } from '../lib/squat/eligible.js'
-const PoseProbe = lazy(() => import('../components/PoseProbe.jsx'))
+import { pickSetToLog } from '../lib/squat/log-reps.js'
+const RepCamera = lazy(() => import('../components/RepCamera.jsx'))
 
 // How long after a key starts a hold the same key is not yet its "Done" (#133). A USB button
 // that bounces, or a double press, sends two presses a moment apart: the first starts the hold,
@@ -1206,14 +1207,27 @@ function ActiveWorkout() {
     }
   }
 
+  // Camera rep counter (docs/superpowers/specs/2026-10-07-squat-camera-design.md). Save writes the
+  // count into the first working set not done yet — adding a set when all are done — and ticks it,
+  // so the rest timer and the progression read it exactly like a hand-logged set.
+  const logCameraReps = (idx, reps) => {
+    let i = pickSetToLog(useStore.getState().S.active?.entries[idx]?.sets)
+    if (i < 0) {
+      addSet(idx)
+      i = useStore.getState().S.active.entries[idx].sets.length - 1
+    }
+    setField(idx, i, 'r', reps)
+    toggle(idx, i)
+  }
+  const openCameraCount = idx => useUI.getState().openSheet(close => (
+    <Suspense fallback={null}>
+      <RepCamera onCancel={close} onSave={reps => { close(); logCameraReps(idx, reps) }} />
+    </Suspense>
+  ), { locked: true })
+
   // One prop object per entry so the card and list layouts share the exact same wiring. The
   // exercise-level actions (swap, move, remove) address the entry itself, so the "more" menu of
   // a superset member acts on that member, not on whatever the marker happens to point at.
-  // Camera rep counter (docs/superpowers/specs/2026-10-07-squat-camera-design.md). Step 0 opens the
-  // frame-rate probe; Task 9 swaps in RepCamera.
-  const openCameraCount = () => useUI.getState().openSheet(
-    close => <Suspense fallback={null}><PoseProbe onClose={close} /></Suspense>, { locked: true })
-
   const blockProps = idx => ({
     editing,
     onSwap: () => swapActiveWorkoutExercise(idx),

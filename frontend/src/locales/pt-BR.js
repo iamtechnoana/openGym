@@ -1218,6 +1218,23 @@ export const PT_BR_OVERRIDES = {
   'Greys show darker in light mode, so buttons don’t look switched off.': 'Os cinzas ficam mais escuros no modo claro, para os botões não parecerem desligados.',
   'Signed in from another tab. Your workout came along, keep going here.': 'Login feito em outra aba. Seu treino veio junto, continue por aqui.',
   'Count with camera': 'Count with camera',
+  'Put the phone beside you at hip height, with your whole body in the picture.': 'Put the phone beside you at hip height, with your whole body in the picture.',
+  'I can\'t see you': 'I can\'t see you',
+  'Save to set': 'Save to set',
+  'Switch camera': 'Switch camera',
+  'This device is slow, so the count may be off.': 'This device is slow, so the count may be off.',
+  'Camera access was denied. Allow it in Settings and try again.': 'Camera access was denied. Allow it in Settings and try again.',
+  'No camera available.': 'No camera available.',
+  'The pose model couldn\'t be loaded.': 'The pose model couldn\'t be loaded.',
+  'Deeper': 'Deeper',
+  'Chest up': 'Chest up',
+  'Stay on your heels': 'Stay on your heels',
+  'Stand all the way up': 'Stand all the way up',
+  '{0} reps': '{0} reps',
+  'Not deep enough: {0}': 'Not deep enough: {0}',
+  'Leaning forward: {0}': 'Leaning forward: {0}',
+  'Heels came up: {0}': 'Heels came up: {0}',
+  'Not standing all the way up: {0}': 'Not standing all the way up: {0}',
 }
 
 export default { ...pt, ...PT_BR_OVERRIDES }

@@ -1,0 +1,19 @@
+{
+  "Put the phone beside you at hip height, with your whole body in the picture.": { "tr": "Telefonu yanına, kalça hizasına koy; baştan ayağa görünmen lazım." },
+  "I can't see you": { "tr": "Görünmüyorsun" },
+  "Save to set": { "tr": "Sete yaz" },
+  "Switch camera": { "tr": "Kamerayı değiştir" },
+  "This device is slow, so the count may be off.": { "tr": "Bu cihaz yavaş; sayım hatalı olabilir." },
+  "Camera access was denied. Allow it in Settings and try again.": { "tr": "Kamera izni verilmedi. Ayarlar’dan izin verip tekrar dene." },
+  "No camera available.": { "tr": "Kamera bulunamadı." },
+  "The pose model couldn't be loaded.": { "tr": "Vücut takip modeli yüklenemedi." },
+  "Deeper": { "tr": "Daha derin" },
+  "Chest up": { "tr": "Göğsünü kaldır" },
+  "Stay on your heels": { "tr": "Topuklarına bas" },
+  "Stand all the way up": { "tr": "Tam kalk" },
+  "{0} reps": { "tr": "{0} tekrar" },
+  "Not deep enough: {0}": { "tr": "Derinlik yetersiz: {0}" },
+  "Leaning forward: {0}": { "tr": "Öne eğilme: {0}" },
+  "Heels came up: {0}": { "tr": "Topuk kalktı: {0}" },
+  "Not standing all the way up: {0}": { "tr": "Tam kalkmadı: {0}" }
+}
