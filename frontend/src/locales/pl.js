@@ -1955,4 +1955,5 @@ export default {
   'Greys show darker in light mode, so buttons don’t look switched off.': 'Szarości są ciemniejsze w trybie jasnym, żeby przyciski nie wyglądały na wyłączone.',
   'custom color picker': 'własny kolor niestandardowy próbnik wybór koloru',
   'Signed in from another tab. Your workout came along, keep going here.': 'Zalogowano w innej karcie. Twój trening przeszedł razem z kontem, kontynuuj tutaj.',
+  'Count with camera': 'Count with camera',
 }

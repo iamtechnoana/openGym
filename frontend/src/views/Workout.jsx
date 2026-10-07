@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useId, useRef, useState } from 'react'
+import { Fragment, lazy, Suspense, useEffect, useId, useRef, useState } from 'react'
 import SwipeCards from '../components/SwipeCards.jsx'
 import SwipeRow from '../components/SwipeRow.jsx'
 import { useNavigate } from 'react-router-dom'
@@ -40,6 +40,8 @@ import { isWarmupRow, isDropSet, isRestPauseSet, dropsOf, clustersOf, addDrop, a
 import { canMoveActiveWorkoutUnit, moveActiveWorkoutUnit } from '../lib/active-workout-order.js'
 import { nextOpenSet, workoutKeyAction } from '../lib/workout-keys.js'
 import { MUSCLE_NAME } from '../lib/muscles.js'
+import { isCameraSquat } from '../lib/squat/eligible.js'
+const PoseProbe = lazy(() => import('../components/PoseProbe.jsx'))
 
 // How long after a key starts a hold the same key is not yet its "Done" (#133). A USB button
 // that bounces, or a double press, sends two presses a moment apart: the first starts the hold,
@@ -97,7 +99,7 @@ const RTL_LETTER = /[֐-ࣿיִ-﷿ﹰ-﻿]/
 // enough to turn over, far shorter than the rest the set earns once both sides are held.
 const SWITCH_SIDES_SEC = 10
 
-function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSide, onField, onAddSet, onRemoveSet, onAddWarmup, onRemoveSetAt, onCopySetAt, onStartTimed, onPairPrev, onPairNext, onSetRowRef, onProgressionSettings, onRest, onNoProg, routineUpdate, onSwap, onMoveUp, onMoveDown, canMoveUp, canMoveDown, onRemoveExercise, busy }) {
+function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSide, onField, onAddSet, onRemoveSet, onAddWarmup, onRemoveSetAt, onCopySetAt, onStartTimed, onPairPrev, onPairNext, onSetRowRef, onProgressionSettings, onRest, onNoProg, routineUpdate, onSwap, onCameraCount, onMoveUp, onMoveDown, canMoveUp, canMoveDown, onRemoveExercise, busy }) {
   const S = useStore(s => s.S)
   const update = useStore(s => s.update)
   const working = useUI(s => s.work)
@@ -375,6 +377,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     sections: [
       { title: t('Today'), items: [
         onSwap && { icon: 'swap', label: t('Swap exercise'), onClick: onSwap, disabled: busy },
+        onCameraCount && isCameraSquat(entry.id, ex?.n) && { icon: 'camera', label: t('Count with camera'), onClick: onCameraCount },
         { icon: 'sunrise', label: t('Add warm-up set'), onClick: onAddWarmup },
         { icon: 'note', label: entry.note ? t('Edit note') : t('Add note'), sub: entry.note || undefined, onClick: () => exerciseNoteSheet(entryIdx) },
         onNoProg && { icon: 'chartLineSlash', label: t('Don’t count for progression'), sub: t('This exercise, this session only'), on: entry.noProg === true, onClick: () => onNoProg(entry.noProg !== true) },
@@ -1206,9 +1209,15 @@ function ActiveWorkout() {
   // One prop object per entry so the card and list layouts share the exact same wiring. The
   // exercise-level actions (swap, move, remove) address the entry itself, so the "more" menu of
   // a superset member acts on that member, not on whatever the marker happens to point at.
+  // Camera rep counter (docs/superpowers/specs/2026-10-07-squat-camera-design.md). Step 0 opens the
+  // frame-rate probe; Task 9 swaps in RepCamera.
+  const openCameraCount = () => useUI.getState().openSheet(
+    close => <Suspense fallback={null}><PoseProbe onClose={close} /></Suspense>, { locked: true })
+
   const blockProps = idx => ({
     editing,
     onSwap: () => swapActiveWorkoutExercise(idx),
+    onCameraCount: editing ? null : () => openCameraCount(idx),
     onMoveUp: () => moveUnitAt(idx, -1),
     onMoveDown: () => moveUnitAt(idx, 1),
     canMoveUp: canMoveActiveWorkoutUnit(A, idx, -1),

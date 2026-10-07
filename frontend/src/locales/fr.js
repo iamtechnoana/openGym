@@ -1955,4 +1955,5 @@ export default {
   'Greys show darker in light mode, so buttons don’t look switched off.': 'Les gris foncent en mode clair, pour que les boutons n’aient pas l’air éteints.',
   'custom color picker': 'couleur perso personnalisée sélecteur nuancier',
   'Signed in from another tab. Your workout came along, keep going here.': 'Connecté depuis un autre onglet. Ta séance a suivi, continue ici.',
+  'Count with camera': 'Count with camera',
 }

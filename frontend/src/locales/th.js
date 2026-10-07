@@ -1966,4 +1966,5 @@ export default {
   'Greys show darker in light mode, so buttons don’t look switched off.': 'สีเทาจะเข้มขึ้นในโหมดสว่าง ปุ่มจะได้ไม่ดูเหมือนถูกปิดอยู่',
   'custom color picker': 'สีเอง กำหนดเอง ตัวเลือกสี',
   'Signed in from another tab. Your workout came along, keep going here.': 'ลงชื่อเข้าใช้จากแท็บอื่นแล้ว การออกกำลังกายของคุณมาด้วย ทำต่อที่นี่ได้เลย',
+  'Count with camera': 'Count with camera',
 }

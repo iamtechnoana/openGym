@@ -1975,4 +1975,5 @@ export default {
   'Greys show darker in light mode, so buttons don’t look switched off.': 'Grautöne werden im hellen Modus dunkler, damit Buttons nicht ausgeschaltet wirken.',
   'custom color picker': 'eigene Farbe benutzerdefiniert Farbwähler Farbauswahl',
   'Signed in from another tab. Your workout came along, keep going here.': 'In einem anderen Tab angemeldet. Dein Training ist mitgekommen, mach hier weiter.',
+  'Count with camera': 'Count with camera',
 }
