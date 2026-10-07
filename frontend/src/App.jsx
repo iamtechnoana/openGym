@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from 'react'
 import { HashRouter, Routes, Route, Navigate, useNavigate, useLocation, useNavigationType } from 'react-router-dom'
 import { useStore } from './store/useStore.js'
 import { useUI } from './store/useUI.js'
@@ -45,6 +45,8 @@ import Admin from './views/Admin.jsx'
 import CoachChat from './views/CoachChat.jsx'
 import CoachIntake from './views/CoachIntake.jsx'
 import CoachSetup from './views/CoachSetup.jsx'
+// Development only: turns a squat video into a landmark fixture (lib/squat/fixtures.test.js).
+const PoseExtract = import.meta.env.DEV ? lazy(() => import('./views/PoseExtract.jsx')) : null
 
 // last known scrollY per route, so back-navigation can put the page where it was
 const scrollPositions = new Map()
@@ -212,6 +214,7 @@ function Shell() {
               <Route path="/structural-balance" element={<StructuralBalance />} />
               <Route path="/progress-photos" element={<ProgressPhotos />} />
               <Route path="/settings" element={<SettingsRoute />} />
+              {PoseExtract && <Route path="/dev/pose-extract" element={<Suspense fallback={null}><PoseExtract /></Suspense>} />}
               <Route path="/settings/:page" element={<SettingsRoute />} />
               {/* The Coach screens gate themselves on the instance config; the routes exist
                   unconditionally so a deep link from a notification lands somewhere sane
