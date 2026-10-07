@@ -66,7 +66,10 @@ export function createRepCounter(options = {}) {
     }
 
     // phase === 'down'
-    if (smooth < rep.minKnee) { rep.minKnee = smooth; rep.bottom = m }
+    // The thresholds read the smoothed angle; the bottom is the deepest real frame, because the
+    // smoothed minimum lags a frame behind and lands on the way back up.
+    if (smooth < rep.minKnee) rep.minKnee = smooth
+    if (m.knee < rep.bottom.knee) rep.bottom = m
     if (heelRef != null && m.heelY != null && m.legLen > 0) {
       rep.heelRise = Math.max(rep.heelRise, (heelRef - m.heelY) / m.legLen)
     }

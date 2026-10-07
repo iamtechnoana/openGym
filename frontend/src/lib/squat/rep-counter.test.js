@@ -35,6 +35,13 @@ describe('rep counter — counting', () => {
     expect(reps[0].minKnee).toBeLessThan(100)
     expect(c.count).toBe(1)
   })
+  it('takes the bottom from the deepest real frame, not where the smoothed angle lags to', () => {
+    const { c, t } = ready()
+    const down = ramp(170, 91, 600).map((k, i, a) => frame(k, i === a.length - 1 ? { hipY: 0.71 } : {}))
+    const rep = feed(c, [...down, ...ramp(90, 170, 600)], { t0: t }).events.find(e => e.type === 'rep')
+    expect(rep.bottom.knee).toBe(91)
+    expect(rep.bottom.hipY).toBe(0.71)
+  })
   it('does not count twice for a wobble at the bottom or near the top', () => {
     const { c, t } = ready()
     const wobbly = [...ramp(170, 92, 500), 105, 95, 108, 92, ...ramp(92, 147, 400), 140, 148, 145, ...ramp(145, 170, 200)]
