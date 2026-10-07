@@ -51,6 +51,18 @@ describe('createSpeaker — Android app', () => {
     await sp.say('Deeper')
     expect(calls).toEqual(['speak:warm', 'stop', 'speak:3', 'speak:Deeper'])
   })
+  it('says nothing more once stopped, even a line still waiting for the plugin to load', async () => {
+    const tts = { speak: vi.fn().mockResolvedValue(), stop: vi.fn().mockResolvedValue() }
+    let loaded
+    const sp = createSpeaker({ native: true, loadTts: () => new Promise(r => { loaded = r }) })
+    const pending = sp.say('Daha derin')
+    await new Promise(r => setTimeout(r, 0))   // the line is now waiting on the plugin
+    sp.stop()
+    loaded(tts)
+    await pending
+    await sp.say('bir')
+    expect(tts.speak).not.toHaveBeenCalled()
+  })
   it('falls back to beeps for good once the plugin fails', async () => {
     const fallback = vi.fn()
     const tts = { speak: vi.fn().mockRejectedValue(new Error('no tts')), stop: vi.fn() }

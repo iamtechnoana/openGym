@@ -23,6 +23,7 @@ export function createSpeaker({
   const voice = speechLang(lang)
   let tts = null
   let broken = false
+  let stopped = false   // the screen is gone: nothing more is said, not even a line still loading
   // Lines reach the engine in the order they were said: each waits until the one before it has
   // been handed over (not until it has been spoken, or a count could never cut a line short).
   // Without this, a cue said right after an interrupting count overtook it while the count was
@@ -39,10 +40,12 @@ export function createSpeaker({
   }
 
   async function speak(text, { interrupt = false } = {}, handed) {
+    if (stopped) return
     if (broken) return fallback()
     try {
       if (native) {
         tts ||= await loadTts()
+        if (stopped) return
         if (interrupt) await tts.stop().catch(() => {})
         // queueStrategy 1 = Add: a cue waits for the count before it instead of cutting it off.
         const spoken = tts.speak({ text, lang: voice, rate: 1.1, queueStrategy: 1 })
@@ -63,6 +66,7 @@ export function createSpeaker({
   }
 
   function stop() {
+    stopped = true
     try { if (native) tts?.stop(); else synth?.cancel() } catch { /* nothing to stop */ }
   }
 
