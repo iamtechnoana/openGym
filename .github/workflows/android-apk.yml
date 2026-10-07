@@ -23,7 +23,8 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - uses: android-actions/setup-android@v3
+      # No setup-android step: ubuntu-latest ships the Android SDK with ANDROID_HOME set, and
+      # setup-android@v3 now fails looking for the retired 'tools' package.
       - name: Fixed debug key
         env:
           KS: ${{ secrets.DEBUG_KEYSTORE_B64 }}
