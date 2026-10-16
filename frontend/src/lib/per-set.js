@@ -6,7 +6,7 @@
  * per-side set is one set, and a drop set or rest-pause set is plotted at its main set. The same
  * exercise twice in one workout keeps counting across both entries. Pure, so the chart and the
  * tests read the same thing. */
-import { entriesForExercise, completedRepsOf } from './history.js'
+import { entriesForExercise, completedRepsOf, workoutAt } from './history.js'
 import { phaseForSet, modeForSet, hasCompletedWork, isSideSet } from './workout-model.js'
 import { estimate1RM } from './onerm.js'
 
@@ -21,7 +21,7 @@ const weightOf = set => (isSideSet(set) ? Math.max(0, ...doneSides(set).map(side
  *  and the rep that went missing in the last set is the thing to see. A set past the estimate's
  *  rep cap has no point, as on the Est. 1RM curve. A per-side set is estimated from one side's
  *  reps, not both added up. */
-export function perSetSessions(workouts, exId, { metric = 'weight' } = {}) {
+export function perSetSessions(workouts, exId, { metric = 'weight', formula } = {}) {
   const out = []
   for (const w of workouts || []) {
     let n = 0
@@ -34,11 +34,11 @@ export function perSetSessions(workouts, exId, { metric = 'weight' } = {}) {
         if (!hasCompletedWork(set)) continue
         const wt = weightOf(set), r = completedRepsOf(set)
         const perSide = isSideSet(set) ? r / doneSides(set).length : r
-        const y = metric === 'reps' ? r : metric === 'e1rm' ? estimate1RM(wt, perSide) || 0 : wt
+        const y = metric === 'reps' ? r : metric === 'e1rm' ? estimate1RM(wt, perSide, formula, set.rir ?? null) || 0 : wt
         if (y > 0) sets.push({ n, y, w: wt, r })
       }
     }
-    if (sets.length) out.push({ t: w.start, d: w.d, sets })
+    if (sets.length) out.push({ t: workoutAt(w), d: w.d, sets })
   }
   return out
 }

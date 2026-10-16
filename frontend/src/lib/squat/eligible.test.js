@@ -32,7 +32,16 @@ describe('isCameraSquat', () => {
     expect(isCameraSquat('c_5', 'Bench press')).toBe(false)
     expect(isCameraSquat('c_6')).toBe(false)
   })
-  it('lists only four-digit catalogue ids', () => {
-    for (const id of CAMERA_SQUAT_IDS) expect(id).toMatch(/^\d{4}$/)
+  it('lists only catalogue ids, which are digits', () => {
+    for (const id of CAMERA_SQUAT_IDS) expect(id).toMatch(/^\d+$/)
+  })
+  it('knows the v1.4 catalogue: bodyweight squats and five-digit ids', () => {
+    // squat, air squat, prisoner squat, trap bar squat, kettlebell squat
+    for (const id of ['1197', '3948', '1580', '5304', '10673']) expect(isCameraSquat(id)).toBe(true)
+  })
+  it('never judges an unlisted catalogue squat by its name, whatever the id length', () => {
+    // clock goblet squat (moves around), quarter squat (shallow by design), pin squat (starts at
+    // the bottom), lever belt squat (machine), squat mobility
+    for (const id of ['10191', '1514', '5701', '2950', '2988']) expect(isCameraSquat(id, 'squat')).toBe(false)
   })
 })
